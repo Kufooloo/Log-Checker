@@ -43,7 +43,7 @@ class FFlogs(commands.Cog):
         for i in range(5):
             team = data.get(i)
             if team[2]:
-                body = f"Killed at {team[3]} with {team[4]} pulls"
+                body = f"Killed at <t:{str(team[3])[:10]}> with {team[4]} pulls"
             else:
                 body = f"Progress: {team[1]} Pulls: {team[4]}"
             message.add_field(name=team[0], value=body, inline=False)
