@@ -12,7 +12,7 @@ WORLDS = [
     "Balmung",
     "Brynhildr",
     "Coeurl",
-    "Diablos",
+    "Diabolos",
     "Goblin",
     "Malboro",
     "Mateus",
@@ -56,3 +56,12 @@ FIGHTS = [
     "Dsr",
     "Top"
 ]
+
+RELEASE_DATES = {
+    "Ew_Dsr": 1650956400,
+    "Ew_Top": 1674547200,
+    "Verse": 1582012800,
+    "Promise":1607414400,
+    "Asphodelos": 1641283200,
+    "Abyssos": 1661842800
+}

@@ -5,7 +5,8 @@ from discord.ext import tasks, commands
 from discord.commands import option 
 import json
 from urllib.parse import urlparse 
-from data import WORLDS, ENCOUNTERS, PHASES, FIGHTS
+from data import WORLDS, ENCOUNTERS, PHASES, FIGHTS, RELEASE_DATES
+import math
 
 intents = discord.Intents.default()
 
@@ -15,6 +16,7 @@ bot = discord.Bot()
 async def on_ready():
     print(f"Logged in as {bot.user} (ID: {bot.user.id})")
     print("------")
+    print(earliest_clear_date("Emilia", "Makise", "Halicarnassus"))
 
 class FFlogs(commands.Cog):
     @commands.slash_command(name="log_check", guild_ids=[932734358870188042])
@@ -29,7 +31,80 @@ class FFlogs(commands.Cog):
     ):
         """Searches for information on the given user"""
         await ctx.respond(f"First name: {first_name} Last Name: {last_name} World {world}")
-        await ctx.send(check_fflogs_ult(first_name, last_name, world))
+        clear_times =  earliest_clear_date(first_name, last_name, world)  
+        if clear_times is None:
+            ctx.send("No character with given information.")
+        message_embed = discord.Embed(title=f"{first_name} {last_name} @ {world}", color=discord.Color.dark_grey())
+        message_embed.set_author(name="LogChecker", icon_url="https://gamepress.gg/arknights/sites/arknights/files/2022-11/TexalterAvatar.png")
+        
+        print(clear_times)
+        #check for shb and below ults
+        #ucob
+        fight_name = clear_times.get('Ucob')
+
+        title = "The Unending Coil of Bahamut"
+        match fight_name:
+            case 'SB_Ucob':
+                body = "Cleared in Stormblood"
+            case 'ShB_Ucob':
+                body = "Cleared in ShadowBringers"
+            case 'Ew_Ucob':
+                body = "Cleared in Endwalker"
+            case None:
+                body = "Has not cleared Ucob"
+        
+        message_embed.add_field(name=title, value=body)
+
+        #uwu
+        fight_name = clear_times.get('Uwu')
+
+        title = "The Weapon's Refrain"
+        match fight_name:
+            case 'SB_Uwu':
+                body = "Cleared in Stormblood"
+            case 'ShB_Uwu':
+                body = "Cleared in ShadowBringers"
+            case 'Ew_Uwu':
+                body = "Cleared in Endwalker"
+            case None:
+                body = "Has not cleared"
+        
+        message_embed.add_field(name=title, value=body)
+
+        fight_name = clear_times.get('Tea')
+
+        title = "The Epic of Alexander"
+        match fight_name:
+            case 'ShB_Tea':
+                body = "Cleared in ShadowBringers"
+            case 'Ew_Tea':
+                body = "Cleared in Endwalker"
+            case None:
+                body = "Has not cleared Tea"
+        
+        message_embed.add_field(name=title, value=body)
+                
+        title = "Dragonsong's Reprise"
+        fight_time = clear_times.get('Dsr')
+        print(fight_time)
+
+        if fight_time is None:
+            body = "Has not cleared Dsr"
+        else:
+            days = math.trunc(abs(int(str(fight_time)[:10]) - RELEASE_DATES['Ew_Dsr']) / 86400 )
+            body =  f"Cleared {days} days after release day"
+        
+        message_embed.add_field(name=title, value=body)
+
+        add_field_raid(message_embed, clear_times, "Verse")
+        add_field_raid(message_embed, clear_times, "Promise")
+        add_field_raid(message_embed, clear_times, "Asphodelos")
+        add_field_raid(message_embed, clear_times, "Abyssos")
+        
+        message_embed.set_footer(text=check_fflogs_ult(first_name, last_name, world))
+
+
+        await ctx.send(embed=message_embed)
         return
 
 
@@ -171,7 +246,7 @@ def check_fflogs_ult(first_name:str, last_name:str, world:str):
         return "This person has not cleared an ultimate"
     ret = ""
     for fight, kill in message.items():
-        ret += f"{fight} {kill} times\n"
+        ret += f"{fight} {kill} times. "
 
 
     return ret
@@ -200,8 +275,6 @@ def check_wfr():
         kill_time = encounter[0].get('killedAtTimestamp')
         pull_count = encounter[0].get('pullCount')
 
-
-
         return_dict.update({i:[team_name, bestPercent, killed, kill_time, pull_count]})
     print(return_dict)
     return return_dict
@@ -223,6 +296,139 @@ def check_report(report_id:str):
             return ["error"]
     data = contents['data']['reportData']['report']['fights']
     return data
+
+def earliest_clear_date(first_name, last_name, world):
+    url = "https://www.fflogs.com/api/v2/client/"
+    name = f"{first_name} {last_name}"
+
+    payload = "{\"query\":\"query characterData(\\n\\t$name: String!\\n\\t$serverSlug: String!\\n) {\\n\\tcharacterData {\\n\\t\\tcharacter(\\n\\t\\t\\tname: $name\\n\\t\\t\\tserverSlug: $serverSlug\\n\\t\\t\\tserverRegion: \\\"NA\\\"\\n\\t\\t) {\\n\\t\\t\\tSB_Ucob: encounterRankings(encounterID: 19, partition:-1)\\n\\t\\t\\tSB_Uwu: encounterRankings(encounterID: 23, partition:-1)\\n\\t\\t\\tShB_Ucob: encounterRankings(encounterID: 1047, partition:-1)\\n\\t\\t\\tShB_Uwu: encounterRankings(encounterID: 1048, partition:-1)\\n\\t\\t\\tShB_Tea: encounterRankings(encounterID: 1050, partition:-1)\\n\\t\\t\\tEw_Ucob: encounterRankings(encounterID: 1060, partition:-1)\\n\\t\\t\\tEw_Uwu: encounterRankings(encounterID: 1061, partition:-1)\\n\\t\\t\\tEw_Tea: encounterRankings(encounterID: 1062, partition:-1)\\n\\t\\t\\tEw_Dsr: encounterRankings(encounterID: 1065, partition:-1)\\n\\t\\t\\tEw_Top: encounterRankings(encounterID: 1068, partition:-1)\\n\\t\\t\\tVerse: encounterRankings(encounterID: 72, partition:-1)\\n\\t\\t\\tPromise: encounterRankings(encounterID: 77, partition:-1)\\n\\t\\t\\tAsphodelos: encounterRankings(encounterID: 82, partition:-1)\\n\\t\\t\\tAbyssos: encounterRankings(encounterID: 87, partition:-1)\\n\\t\\t}\\n\\t}\\n}\\n\",\"operationName\":\"characterData\",\"variables\":{\"name\":\"" + name + "\",\"serverSlug\":\"" + world + "\"}}"
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + bearer_token 
+    }
+    response = requests.request("POST", url, data=payload, headers=headers)
+
+    print(response.text)
+    content = response.json()
+    data = content['data']['characterData']['character']
+    if data is None:
+        return None
+    return_data = {}
+
+    #check for ucob
+    ucob_releases = ["SB_Ucob", "ShB_Ucob", "Ew_Ucob"]
+    found = False
+    for release in ucob_releases:
+        if not found:
+            if data[release].get('totalKills') != 0:
+                return_data.update({"Ucob":release})
+                found = True
+    
+    #check for uwu
+    uwu_releases = ["SB_Uwu", "ShB_Uwu", "Ew_Uwu"]
+    found = False
+    for release in uwu_releases:
+        if not found:
+            if data[release].get('totalKills') != 0:
+                return_data.update({"Uwu":release})
+                found = True
+
+    #check for tea
+    tea_releases = ["ShB_Tea", "Ew_Tea"]
+    found = False
+    for release in tea_releases:
+        if not found:
+            if data[release].get('totalKills') != 0:
+                return_data.update({"Tea":release})
+                found = True
+
+    #check dsr (with release date)
+    dsr_releases = ["Ew_Dsr"]
+    for release in dsr_releases:
+        fights = data[release]['ranks']
+        if len(fights) > 0:
+            lowest_date = fights[0]['startTime']
+            for fight in fights:
+                time = fight['startTime']
+                if time < lowest_date:
+                    lowest_date = time
+    if len(fights) > 0:
+        return_data.update({'Dsr':lowest_date})
+    
+    #check Verse
+    fights = data['Verse']['ranks']
+    if len(fights) > 0:
+        lowest_date = fights[0]['startTime']
+        for fight in fights:
+            time = fight['startTime']
+            if time < lowest_date:
+                lowest_date = time
+    if len(fights) > 0:
+        return_data.update({'Verse':lowest_date})
+
+    #check Promise
+    fights = data['Promise']['ranks']
+    if len(fights) > 0:
+        lowest_date = fights[0]['startTime']
+        for fight in fights:
+            time = fight['startTime']
+            if time < lowest_date:
+                lowest_date = time
+    if len(fights) > 0:
+        return_data.update({'Promise':lowest_date})
+
+    #check Asphodelos
+    fights = data['Asphodelos']['ranks']
+    if len(fights) > 0:
+        lowest_date = fights[0]['startTime']
+        for fight in fights:
+            time = fight['startTime']
+            if time < lowest_date:
+                lowest_date = time
+    if len(fights) > 0:
+        return_data.update({'Asphodelos':lowest_date})
+
+    #check abyssos
+    fights = data['Abyssos']['ranks']
+    if len(fights) > 0:
+        lowest_date = fights[0]['startTime']
+        for fight in fights:
+            time = fight['startTime']
+            if time < lowest_date:
+                lowest_date = time
+    if len(fights) > 0:
+        return_data.update({'Abyssos':lowest_date})
+
+
+
+
+
+    return return_data
+
+
+def add_field_raid(embed, data, fight_name):
+    fight_time = data.get(fight_name)
+    if fight_time is None:
+        embed.add_field(name=fight_name, value=f"Did not clear")
+        return
+
+
+    fight_time = int(str(fight_time)[:10])
+
+    days = math.trunc(abs(fight_time - RELEASE_DATES[fight_name]) / 86400 )
+
+    embed.add_field(name=fight_name, value=f"Cleared {days} days after the release of the tier")
+    return
+
+
+
+
+
+
+
+
+    
+
 
 
 bot.add_cog(FFlogs(bot))
