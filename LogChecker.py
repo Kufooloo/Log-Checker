@@ -428,10 +428,6 @@ def add_field_raid(embed, data, fight_name):
 
 
 
-
-
-
-
     
 
 
