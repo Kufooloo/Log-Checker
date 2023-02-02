@@ -19,6 +19,11 @@ async def on_ready():
     print(earliest_clear_date("Emilia", "Makise", "Halicarnassus"))
 
 class FFlogs(commands.Cog):
+    def __init__(self, bot) -> None:
+        super().__init__()
+        self.bot = bot
+        self.prev_leaderboard = {}
+        
     @commands.slash_command(name="log_check", guild_ids=[932734358870188042])
     @option("first_name", description="Players first name.")
     @option("last_name", description="Players last name.")
@@ -301,7 +306,7 @@ def earliest_clear_date(first_name, last_name, world):
     url = "https://www.fflogs.com/api/v2/client/"
     name = f"{first_name} {last_name}"
 
-    payload = "{\"query\":\"query characterData(\\n\\t$name: String!\\n\\t$serverSlug: String!\\n) {\\n\\tcharacterData {\\n\\t\\tcharacter(\\n\\t\\t\\tname: $name\\n\\t\\t\\tserverSlug: $serverSlug\\n\\t\\t\\tserverRegion: \\\"NA\\\"\\n\\t\\t) {\\n\\t\\t\\tSB_Ucob: encounterRankings(encounterID: 19, partition:-1)\\n\\t\\t\\tSB_Uwu: encounterRankings(encounterID: 23, partition:-1)\\n\\t\\t\\tShB_Ucob: encounterRankings(encounterID: 1047, partition:-1)\\n\\t\\t\\tShB_Uwu: encounterRankings(encounterID: 1048, partition:-1)\\n\\t\\t\\tShB_Tea: encounterRankings(encounterID: 1050, partition:-1)\\n\\t\\t\\tEw_Ucob: encounterRankings(encounterID: 1060, partition:-1)\\n\\t\\t\\tEw_Uwu: encounterRankings(encounterID: 1061, partition:-1)\\n\\t\\t\\tEw_Tea: encounterRankings(encounterID: 1062, partition:-1)\\n\\t\\t\\tEw_Dsr: encounterRankings(encounterID: 1065, partition:-1)\\n\\t\\t\\tEw_Top: encounterRankings(encounterID: 1068, partition:-1)\\n\\t\\t\\tVerse: encounterRankings(encounterID: 72, partition:-1)\\n\\t\\t\\tPromise: encounterRankings(encounterID: 77, partition:-1)\\n\\t\\t\\tAsphodelos: encounterRankings(encounterID: 82, partition:-1)\\n\\t\\t\\tAbyssos: encounterRankings(encounterID: 87, partition:-1)\\n\\t\\t}\\n\\t}\\n}\\n\",\"operationName\":\"characterData\",\"variables\":{\"name\":\"" + name + "\",\"serverSlug\":\"" + world + "\"}}"
+    payload = "{\"query\":\"query characterData(\\n\\t$name: String!\\n\\t$serverSlug: String!\\n) {\\n\\tcharacterData {\\n\\t\\tcharacter(\\n\\t\\t\\tname: $name\\n\\t\\t\\tserverSlug: $serverSlug\\n\\t\\t\\tserverRegion: \\\"NA\\\"\\n\\t\\t) {\\n\\t\\t\\tSB_Ucob: encounterRankings(encounterID: 19, partition:-1)\\n\\t\\t\\tSB_Uwu: encounterRankings(encounterID: 23, partition:-1)\\n\\t\\t\\tShB_Ucob: encounterRankings(encounterID: 1047, partition:-1)\\n\\t\\t\\tShB_Uwu: encounterRankings(encounterID: 1048, partition:-1)\\n\\t\\t\\tShB_Tea: encounterRankings(encounterID: 1050, partition:-1)\\n\\t\\t\\tEw_Ucob: encounterRankings(encounterID: 1060, partition:-1)\\n\\t\\t\\tEw_Uwu: encounterRankings(encounterID: 1061, partition:-1)\\n\\t\\t\\tEw_Tea: encounterRankings(encounterID: 1062, partition:-1)\\n\\t\\t\\tEw_Dsr: encounterRankings(encounterID: 1065, partition:-1)\\n\\t\\t\\tEw_Top: encounterRankings(encounterID: 1068, partition:-1)\\n\\t\\t\\tVerse: encounterRankings(encounterID: 72, partition:-1, difficulty:101)\\n\\t\\t\\tPromise: encounterRankings(encounterID: 77, partition:-1, difficulty:101)\\n\\t\\t\\tAsphodelos: encounterRankings(encounterID: 82, partition:-1, difficulty:101)\\n\\t\\t\\tAbyssos: encounterRankings(encounterID: 87, partition:-1, difficulty:101)\\n\\t\\t}\\n\\t}\\n}\\n\",\"operationName\":\"characterData\",\"variables\":{\"name\":\"" + name + "\",\"serverSlug\":\"" + world + "\"}}"
     headers = {
         "Content-Type": "application/json",
         "Authorization": "Bearer " + bearer_token 
