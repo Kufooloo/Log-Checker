@@ -7,7 +7,7 @@ import json
 from urllib.parse import urlparse 
 from data import WORLDS, ENCOUNTERS, PHASES, FIGHTS, RELEASE_DATES
 import math
-
+from WipePointAnalyzer import WipePoint
 intents = discord.Intents.default()
 
 bot = discord.Bot()
@@ -16,7 +16,6 @@ bot = discord.Bot()
 async def on_ready():
     print(f"Logged in as {bot.user} (ID: {bot.user.id})")
     print("------")
-    print(earliest_clear_date("Emilia", "Makise", "Halicarnassus"))
 
 class FFlogs(commands.Cog):
     def __init__(self, bot) -> None:
@@ -434,6 +433,7 @@ def add_field_raid(embed, data, fight_name):
 
 bot.add_cog(FFlogs(bot))
 bot.add_cog(ReportAnalysis(bot))
+bot.add_cog(WipePoint(bot))
 
 bot.run(bot_token)
 

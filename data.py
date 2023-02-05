@@ -65,3 +65,35 @@ RELEASE_DATES = {
     "Asphodelos": 1641283200,
     "Abyssos": 1661842800
 }
+
+
+
+TOP_PROG_POINTS = {
+    "Clear": "Cleared The Omega Protocol",
+    #P6
+    "Run: ****mi*":"Phase 6 Enrage",
+    "Magic Number":"Phase 6 Lb Phase",
+    "Cosmo Memory":"Phase 6 Start",
+    #P5
+    "Blind Faith": "Phase 5 Enrage",
+    "Run: ****mi* (Omega Version)": "Run Dynamis Omega",
+    "Run: ****mi* (Sigma Version)": "Run Dynamis Sigma",
+    "Run: ****mi* (Delta Version)": "Run Dynamis Delta",
+    #P4
+    "Blue Screen": "Blue Screen Enrage",
+
+
+    #P3
+    "Ion Efflux": "Phase 3 Enrage",
+    "Hello, World": "Hello World",
+
+
+    #P2
+    "Limitless Synergy": "Limitless Synergy",
+    "Party Synergy": "Party Synergy",
+    #P1
+    "Pantokrator": "Pantokrator",
+    "Program Loop": "Program Loop"
+}
+#andii wanted this
+A = "D"
