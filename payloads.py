@@ -1,0 +1,1 @@
+FIGHT_TIME_STARTS = "{\"query\":\"query report($report: String!)\\n{\\n\\treportData{\\n\\t\\treport(code: $report){"
