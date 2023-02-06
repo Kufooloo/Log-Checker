@@ -60,6 +60,9 @@ class WipePoint(commands.Cog):
                 lookForID = 1068
                 message_color = 0x82878f
                 timeStamps = returnFightStartEndTImes(report_id, lookForID)
+                if type(timeStamps) is str:
+                    await ctx.followup.send(timeStamps)
+                    return 
                 report = createTopData()
                 for item in timeStamps:
                     if item[2] == "true":
@@ -77,16 +80,23 @@ class WipePoint(commands.Cog):
                 }
                 url = "https://www.fflogs.com/api/v2/client/"
                 response = requests.request("POST", url, data=payload, headers=headers)
-                contents = response.json()
-                for item in contents['data']['reportData']['report']:
-                    print(item)
-                    furthestCast = returnMatchingCastsFromLog(contents['data']['reportData']['report'][item])
-                    print(furthestCast)
-                    print(f"Start: {start_time} End: {end_time}")
-                    for key, content in furthestCast.items():
-                        if content:
-                            report[key] += 1
-                            break
+                try:
+                    contents = response.json()
+                except:
+                    await ctx.send(str(response))
+                try:
+                    for item in contents['data']['reportData']['report']:
+                        print(item)
+                        furthestCast = returnMatchingCastsFromLog(contents['data']['reportData']['report'][item])
+                        print(furthestCast)
+                        print(f"Start: {start_time} End: {end_time}")
+                        for key, content in furthestCast.items():
+                            if content:
+                                report[key] += 1
+                                break
+                except TypeError as err:
+                    print("Error")
+                    await ctx.send(err)
                 
 
                 
@@ -123,7 +133,10 @@ def returnFightStartEndTImes(report:str, encounterID:int):
     response = requests.request("POST", url, data=payload, headers=headers)
     contents = response.json()
     print(contents)
+    if contents.get('errors') is not None:
+        return contents['errors'][0].get('message')
     fightList = contents['data']['reportData']['report']['fights']
+
     for fight in fightList:
         if fight.get("encounterID") == encounterID:
             fight_times.append((fight.get("startTime"), fight.get("endTime"), fight.get("kill"), fight.get("lastPhase"), fight.get("encounterID")))
