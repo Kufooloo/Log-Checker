@@ -95,5 +95,16 @@ TOP_PROG_POINTS = {
     "Pantokrator": "Pantokrator",
     "Program Loop": "Program Loop"
 }
+
+UCOB_PROG_POITNS = {
+    
+
+
+
+
+    
+}
+
+
 #andii wanted this
 A = "D"

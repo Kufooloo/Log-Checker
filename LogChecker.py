@@ -22,7 +22,27 @@ class FFlogs(commands.Cog):
         super().__init__()
         self.bot = bot
         self.prev_leaderboard = {}
+    @commands.slash_command()
+    async def rate_check(self, ctx):
+        payload = "{\"query\":\"query{\\n\\trateLimitData{\\n\\t\\tlimitPerHour\\n\\t\\tpointsSpentThisHour\\n\\t\\tpointsResetIn\\n\\t}\\t\\n}\"}"
+        headers = {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + bearer_token 
+        }
+        url = "https://www.fflogs.com/api/v2/client/"
+        response = requests.request("POST", url, data=payload, headers=headers)
+        contents = response.json()
+
+        message_embed = discord.Embed(title=f"Rate Limit Data", color=discord.Color.dark_grey())
+        message_embed.set_author(name="LogChecker", icon_url="https://gamepress.gg/arknights/sites/arknights/files/2022-11/TexalterAvatar.png")
+        if contents.get("status") == 429:
+            message_embed.add_field(name="Error", value=contents.get('error'))
+        await ctx.respond(embed=message_embed)
         
+
+
+
+
     @commands.slash_command(name="log_check", guild_ids=[932734358870188042])
     @option("first_name", description="Players first name.")
     @option("last_name", description="Players last name.")
@@ -37,13 +57,15 @@ class FFlogs(commands.Cog):
         await ctx.respond(f"First name: {first_name} Last Name: {last_name} World {world}")
         clear_times =  earliest_clear_date(first_name, last_name, world)  
         if clear_times is None:
-            ctx.send("No character with given information.")
+            await ctx.send("No character with given information.")
+            return
         message_embed = discord.Embed(title=f"{first_name} {last_name} @ {world}", color=discord.Color.dark_grey())
         message_embed.set_author(name="LogChecker", icon_url="https://gamepress.gg/arknights/sites/arknights/files/2022-11/TexalterAvatar.png")
         
         print(clear_times)
         #check for shb and below ults
         #ucob
+        
         fight_name = clear_times.get('Ucob')
 
         title = "The Unending Coil of Bahamut"
@@ -180,10 +202,10 @@ class ReportAnalysis(commands.Cog):
             print(encounter_name)
             if encounterID == lookForID:
                 if fight.get('kill') == True:
-                    if embed_data.get('kills') is None:
-                        embed_data.update({'kills':1})
+                    if embed_data.get('Kills') is None:
+                        embed_data.update({'Kills':1})
                     else:
-                        embed_data['kills'] += 1
+                        embed_data['Kills'] += 1
                 else:
                     phase = fight.get('lastPhaseAsAbsoluteIndex')
                     if embed_data.get(phase) is None:
@@ -205,6 +227,7 @@ class ReportAnalysis(commands.Cog):
             message_embed.add_field(name= title, value= body)
 
         await ctx.respond(embed=message_embed)
+    
 
 
 

@@ -59,54 +59,54 @@ class WipePoint(commands.Cog):
             case "TOP":
                 lookForID = 1068
                 message_color = 0x82878f
-                timeStamps = returnFightStartEndTImes(report_id, lookForID)
-                if type(timeStamps) is str:
-                    await ctx.followup.send(timeStamps)
-                    return 
-                report = createTopData()
-                for item in timeStamps:
-                    if item[2] == "true":
-                        report['Clear'] += 1
-                    else:
-                        start_time = item[0]
-                        end_time = item[1]
-                        payload += "\\n\\t\\t\\tfight_" + str(fight_num) + ": table(startTime: " +  str(start_time) + ", endTime: " +  str(end_time) + ", hostilityType:Enemies, dataType: Casts, viewBy:Ability)"
-                        fight_num += 1
-         
-                payload += "\\n\\t\\t}\\n\\t}\\n}\\n\\n\",\"operationName\":\"report\",\"variables\":{\"report\":\"" + report_id + "\"}}"
-                headers = {
-                "Content-Type": "application/json",
-                "Authorization": "Bearer " + bearer_token 
-                }
-                url = "https://www.fflogs.com/api/v2/client/"
-                response = requests.request("POST", url, data=payload, headers=headers)
-                try:
-                    contents = response.json()
-                except:
-                    await ctx.send(str(response))
-                try:
-                    for item in contents['data']['reportData']['report']:
-                        print(item)
-                        furthestCast = returnMatchingCastsFromLog(contents['data']['reportData']['report'][item])
-                        print(furthestCast)
-                        print(f"Start: {start_time} End: {end_time}")
-                        for key, content in furthestCast.items():
-                            if content:
-                                report[key] += 1
-                                break
-                except TypeError as err:
-                    print("Error")
-                    await ctx.send(err)
-                
+        timeStamps = returnFightStartEndTImes(report_id, lookForID)
+        if type(timeStamps) is str:
+            await ctx.followup.send(timeStamps)
+            return 
+        report = createTopData()
+        for item in timeStamps:
+            if item[2] == "true":
+                report['Clear'] += 1
+            else:
+                start_time = item[0]
+                end_time = item[1]
+                payload += "\\n\\t\\t\\tfight_" + str(fight_num) + ": table(startTime: " +  str(start_time) + ", endTime: " +  str(end_time) + ", hostilityType:Enemies, dataType: Casts, viewBy:Ability)"
+                fight_num += 1
+    
+        payload += "\\n\\t\\t}\\n\\t}\\n}\\n\\n\",\"operationName\":\"report\",\"variables\":{\"report\":\"" + report_id + "\"}}"
+        headers = {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + bearer_token 
+        }
+        url = "https://www.fflogs.com/api/v2/client/"
+        response = requests.request("POST", url, data=payload, headers=headers)
+        try:
+            contents = response.json()
+        except:
+            await ctx.send(str(response))
+        try:
+            for item in contents['data']['reportData']['report']:
+                print(item)
+                furthestCast = returnMatchingCastsFromLog(contents['data']['reportData']['report'][item], lookForID)
+                print(furthestCast)
+                print(f"Start: {start_time} End: {end_time}")
+                for key, content in furthestCast.items():
+                    if content:
+                        report[key] += 1
+                        break
+        except TypeError as err:
+            print("Error")
+            await ctx.send(err)
+        
 
-                
-                print(f"Final Report: {report}") 
+        
+        print(f"Final Report: {report}") 
         message_embed = discord.Embed(title=ENCOUNTERS[lookForID], url=fight_url, color=message_color)
         message_embed.set_thumbnail(url=f"https://assets.rpglogs.com/img/ff/bosses/{lookForID}-icon.jpg")
         message_embed.set_author(name="LogChecker", icon_url="https://gamepress.gg/arknights/sites/arknights/files/2022-11/TexalterAvatar.png")
         for key, num in report.items():
             if num != 0:
-                title = TOP_PROG_POINTS[key]
+                title = f"{TOP_PROG_POINTS[key]} - {round(num/fight_num, 2)*100}%"
                 body = f"Wiped {num} time(s)"
                 print(f"title {title} body {body}")
 
@@ -114,7 +114,91 @@ class WipePoint(commands.Cog):
         time_now = datetime.datetime.now()
         diff = time_now - time_at_call
         duration = diff.total_seconds()
-        message_embed.set_footer(text=f"Took {duration} seconds from call")
+        message_embed.set_footer(text=f"{fight_num} pulls. Took {duration} to proccess")
+        await ctx.followup.send(embed = message_embed)
+    
+    @commands.slash_command()
+    @option("fight", desciption="Fight to look for", autocomplete=discord.utils.basic_autocomplete(SUPPORTED_FIGHTS))
+    async def guild_wipepoints(self, ctx, guild_name, fight):
+        """Do not use"""
+        code_list = return_guide_code_list(guild_name)
+        time_dict = {}
+        time_at_call = datetime.datetime.now()
+        await ctx.defer()
+        report = createTopData()
+        for report_id in code_list: 
+            match fight:
+                case "Ucob":
+                    lookForID = 1060
+                    message_color = 0xe08514
+                case "Uwu":
+                    lookForID = 1061
+                    message_color = 0x6ddedc
+                case "Tea":
+                    lookForID = 1062
+                    message_color = 0xcfb319
+                case "Dsr":
+                    lookForID = 1065
+                    message_color = 0x7792a3
+                case "TOP":
+                    lookForID = 1068
+                    message_color = 0x82878f
+            timeStamps = returnFightStartEndTImes(report_id, lookForID)
+            payload = FIGHT_TIME_STARTS
+            fight_num = 0
+
+            if type(timeStamps) is str:
+                await ctx.followup.send(timeStamps)
+                return 
+            for item in timeStamps:
+                if item[2] == "true":
+                    report['Clear'] += 1
+                else:
+                    start_time = item[0]
+                    end_time = item[1]
+                    payload += "\\n\\t\\t\\tfight_" + str(fight_num) + ": table(startTime: " +  str(start_time) + ", endTime: " +  str(end_time) + ", hostilityType:Enemies, dataType: Casts, viewBy:Ability)"
+                    fight_num += 1
+    
+            payload += "\\n\\t\\t}\\n\\t}\\n}\\n\\n\",\"operationName\":\"report\",\"variables\":{\"report\":\"" + report_id + "\"}}"
+            headers = {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + bearer_token 
+            }
+            url = "https://www.fflogs.com/api/v2/client/"
+            response = requests.request("POST", url, data=payload, headers=headers)
+            try:
+                contents = response.json()
+            except:
+                await ctx.send(str(response))
+            try:
+                for item in contents['data']['reportData']['report']:
+                    print(item)
+                    furthestCast = returnMatchingCastsFromLog(contents['data']['reportData']['report'][item], lookForID)
+                    print(furthestCast)
+                    print(f"Start: {start_time} End: {end_time}")
+                    for key, content in furthestCast.items():
+                        if content:
+                            report[key] += 1
+                            break
+            except TypeError as err:
+                print("Error")
+                await ctx.send(err)
+        
+        print(f"Final Report: {report}") 
+        message_embed = discord.Embed(title=guild_name, color=message_color)
+        message_embed.set_thumbnail(url=f"https://assets.rpglogs.com/img/ff/bosses/{lookForID}-icon.jpg")
+        message_embed.set_author(name="LogChecker", icon_url="https://gamepress.gg/arknights/sites/arknights/files/2022-11/TexalterAvatar.png")
+        for key, num in report.items():
+            if num != 0:
+                title = f"{TOP_PROG_POINTS[key]} - {round(num/fight_num, 2)}%"
+                body = f"Wiped {num} time(s)"
+                print(f"title {title} body {body}")
+
+                message_embed.add_field(name= title, value= body)
+        time_now = datetime.datetime.now()
+        diff = time_now - time_at_call
+        duration = diff.total_seconds()
+        message_embed.set_footer(text=f"{fight_num} pulls. Took {duration} to proccess")
         await ctx.followup.send(embed = message_embed)
 
                 
@@ -144,13 +228,16 @@ def returnFightStartEndTImes(report:str, encounterID:int):
     return fight_times
 
 
-def returnMatchingCastsFromLog(contents):
+def returnMatchingCastsFromLog(contents, id):
     
     print(type(contents))
     print(contents)
     data = contents['data']['entries']
     test_dict = {}
-    for key in TOP_PROG_POINTS.keys():
+    match id:
+        case 1068:
+            prog_dict = TOP_PROG_POINTS
+    for key in prog_dict.keys():
         test_dict.update({key:False})
     for cast in data:
         for name in test_dict.keys():
@@ -163,9 +250,27 @@ def returnMatchingCastsFromLog(contents):
 
     return test_dict
 
-        
-        
+def return_guide_code_list(guild_name):
+    code_list = []
+    url = "https://www.fflogs.com/api/v2/client/"
+    zone_id = 53
+    payload = "{\"query\":\"query  reports($name: String!, $zone: Int){\\n\\treportData{\\n\\t\\treports(guildName: $name , zoneID: $zone){\\n\\t\\t\\t\\n\\t\\t\\tdata{\\n\\t\\t\\tcode\\n\\t\\t\\tvisibility\\n\\t\\t\\t}\\n\\t\\t}\\n\\t}\\n}\\n\",\"operationName\":\"reports\",\"variables\":{\"name\":\"" + guild_name + "\",\"zone\":" + str(zone_id) + "}}"
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + bearer_token 
+    }
+    response = requests.request("POST", url, data=payload, headers=headers)
+
+    print(response.text)   
             
+    contents = response.json()
+
+    data = contents['data']['reportData']['reports']['data']
+    for item in data:
+        if item.get('visibility') == 'public':
+            code_list.append(item.get('code'))
+
+    return code_list
 
 
 
