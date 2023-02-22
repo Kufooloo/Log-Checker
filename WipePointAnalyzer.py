@@ -16,6 +16,7 @@ SUPPORTED_FIGHTS = ["TOP"]
 class WipePoint(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.queue = {}
 
     @commands.slash_command()
     @option("fight", desciption="Fight to look for", autocomplete=discord.utils.basic_autocomplete(SUPPORTED_FIGHTS))
@@ -200,6 +201,47 @@ class WipePoint(commands.Cog):
         duration = diff.total_seconds()
         message_embed.set_footer(text=f"{fight_num} pulls. Took {duration} to proccess")
         await ctx.followup.send(embed = message_embed)
+
+    @commands.slash_command(guild_ids=[932734358870188042])
+    async def add_queue(self, ctx, fight_url):
+        if self.queue.get(ctx.author.id) is None:
+            self.queue.update({ctx.author.id:[fight_url]})
+        else:
+            self.queue[ctx.author.id].append(fight_url)
+        await ctx.respond(f"Added report with url {fight_url}")
+    
+    @commands.slash_command(guild_ids=[932734358870188042])
+    async def list_queue(self, ctx):
+        message_embed = discord.Embed(title="Queue List", color = 0x82878f)
+        message_embed.set_author(name="LogChecker", icon_url="https://gamepress.gg/arknights/sites/arknights/files/2022-11/TexalterAvatar.png")
+        body = ""
+        if self.queue.get(ctx.author.id) is None:
+            await ctx.respond("You don't have a list")
+            return
+        for item in self.queue.get(ctx.author.id):
+            body = body + item + "\n"
+        message_embed.add_field(name="Reports", value=body)
+        await ctx.respond(embed=message_embed)
+    @commands.slash_command(guild_ids=[932734358870188042])
+    async def delete_queue(self, ctx):
+        if self.queue.get(ctx.author.id) is None:
+            await ctx.respond("You don't have a queue")
+            return
+        self.queue.pop(ctx.author.id)
+        await ctx.respond("Deleted", hidden=True)
+    @commands.slash_command(guild_ids=[932734358870188042])
+    @option("fight", desciption="Fight to look for", autocomplete=discord.utils.basic_autocomplete(SUPPORTED_FIGHTS))
+    async def analyze_queue(self, ctx, fight):
+        queue = self.queue.get(ctx.author.id)
+        if queue is None:
+            await ctx.respond("You don't have a queue")
+            return
+        for item in queue:
+            await WipePoint.wipepoint(ctx, item, fight)
+
+        
+        
+
 
                 
 

@@ -37,6 +37,12 @@ class FFlogs(commands.Cog):
         message_embed.set_author(name="LogChecker", icon_url="https://gamepress.gg/arknights/sites/arknights/files/2022-11/TexalterAvatar.png")
         if contents.get("status") == 429:
             message_embed.add_field(name="Error", value=contents.get('error'))
+        else:
+            data = contents['data']['rateLimitData']
+            for key, item in data.items():
+                message_embed.add_field(name=key, value=item)
+
+
         await ctx.respond(embed=message_embed)
         
 
