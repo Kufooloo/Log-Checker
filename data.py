@@ -86,6 +86,7 @@ TOP_PROG_POINTS = {
     #P3
     "Ion Efflux": "Phase 3 Enrage",
     "Hello, World": "Hello World",
+    "High-powered Sniper Cannon":"Phase 3 Transition",
 
 
     #P2
