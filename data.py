@@ -98,7 +98,21 @@ TOP_PROG_POINTS = {
 }
 
 UCOB_PROG_POITNS = {
-    
+    "Clear" : "Cleared Ucob",
+    "Morn Afah":"Golden Bahamut",
+    #p4
+    "Liquid Hell":"Adds Phase",
+    #p3
+    "Grand Octet":"Grand Octet",
+    "Tenstrike Trio":"Tenstrike",
+    "Heavens Fall":"Heavensfall",
+    "Blackfire Trio":"Blackfire",
+    "Quickmarch Trio":"Quickmarch",
+    "Calamitous Blaze":"Start of Bahamut",
+    #p2
+    'Lunar Dynamo':"Nael",
+    #p1
+    "Fireball":"Twintania"
 
 
 

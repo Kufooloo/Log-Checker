@@ -5,10 +5,10 @@ from discord.commands import option
 import json
 from urllib.parse import urlparse
 from bot_token import bearer_token
-from data import TOP_PROG_POINTS, ENCOUNTERS
+from data import TOP_PROG_POINTS, ENCOUNTERS, UCOB_PROG_POITNS
 from payloads import FIGHT_TIME_STARTS
 import datetime
-SUPPORTED_FIGHTS = ["TOP"]
+SUPPORTED_FIGHTS = ["TOP", "UCOB"]
 
 
 
@@ -45,9 +45,10 @@ class WipePoint(commands.Cog):
         fight_num = 0
         await ctx.defer()
         match fight:
-            case "Ucob":
+            case "UCOB":
                 lookForID = 1060
                 message_color = 0xe08514
+                report = createUcobData()
             case "Uwu":
                 lookForID = 1061
                 message_color = 0x6ddedc
@@ -60,11 +61,11 @@ class WipePoint(commands.Cog):
             case "TOP":
                 lookForID = 1068
                 message_color = 0x82878f
+                report = createTopData()
         timeStamps = returnFightStartEndTImes(report_id, lookForID)
         if type(timeStamps) is str:
             await ctx.followup.send(timeStamps)
             return 
-        report = createTopData()
         for item in timeStamps:
             if item[2] == "true":
                 report['Clear'] += 1
@@ -107,7 +108,10 @@ class WipePoint(commands.Cog):
         message_embed.set_author(name="LogChecker", icon_url="https://gamepress.gg/arknights/sites/arknights/files/2022-11/TexalterAvatar.png")
         for key, num in report.items():
             if num != 0:
-                title = f"{TOP_PROG_POINTS[key]} - {round(num/fight_num, 2)*100}%"
+                if lookForID == 1068:
+                    title = f"{TOP_PROG_POINTS[key]} - {round(num/fight_num, 2)*100}%"
+                elif lookForID == 1060:
+                    title = f"{UCOB_PROG_POITNS[key]} - {round(num/fight_num, 2)*100}%"
                 body = f"Wiped {num} time(s)"
                 print(f"title {title} body {body}")
 
@@ -129,7 +133,7 @@ class WipePoint(commands.Cog):
         report = createTopData()
         for report_id in code_list: 
             match fight:
-                case "Ucob":
+                case "UCOB":
                     lookForID = 1060
                     message_color = 0xe08514
                 case "Uwu":
@@ -191,7 +195,10 @@ class WipePoint(commands.Cog):
         message_embed.set_author(name="LogChecker", icon_url="https://gamepress.gg/arknights/sites/arknights/files/2022-11/TexalterAvatar.png")
         for key, num in report.items():
             if num != 0:
-                title = f"{TOP_PROG_POINTS[key]} - {round(num/fight_num, 2)}%"
+                if lookForID == 1068:
+                    title = f"{TOP_PROG_POINTS[key]} - {round(num/fight_num, 2)}%"
+                elif lookForID == 1060:
+                    title = f"{UCOB_PROG_POITNS[key]} - {round(num/fight_num, 2)}%"
                 body = f"Wiped {num} time(s)"
                 print(f"title {title} body {body}")
 
@@ -279,12 +286,17 @@ def returnMatchingCastsFromLog(contents, id):
     match id:
         case 1068:
             prog_dict = TOP_PROG_POINTS
+        case 1060:
+            prog_dict = UCOB_PROG_POITNS
     for key in prog_dict.keys():
         test_dict.update({key:False})
     for cast in data:
         for name in test_dict.keys():
             if name == 'Cosmo Memory':
                 if cast.get('name') == name and cast.get('actorName') == "Alpha Omega":
+                    test_dict.update({name:True})
+            elif name == 'Liquid Hell':
+                if cast.get('name') == name and cast.get('total') > 30:
                     test_dict.update({name:True})
             elif cast.get('name') == name:
                 test_dict.update({name:True})
@@ -326,11 +338,11 @@ def createTopData():
     for key in keys:
         topReport.update({key:0})
     return topReport
+def createUcobData():
+    topReport = {}
+    keys = UCOB_PROG_POITNS.keys()
+    for key in keys:
+        topReport.update({key:0})
+    return topReport
 
-def main():
-    report = "L6qYp8g7tmrvZnDV"
-    print(returnFightStartEndTImes(report, 1068))
-
-if __name__ == "__main__":
-    main() 
 
