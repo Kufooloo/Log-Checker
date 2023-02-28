@@ -101,11 +101,11 @@ UCOB_PROG_POITNS = {
     "Clear" : "Cleared Ucob",
     "Morn Afah":"Golden Bahamut",
     #p4
-    "Liquid Hell":"Adds Phase",
+    "Bahamut's Claw":"Adds Phase",
     #p3
     "Grand Octet":"Grand Octet",
     "Tenstrike Trio":"Tenstrike",
-    "Heavens Fall":"Heavensfall",
+    "Heavensfall Trio":"Heavensfall",
     "Blackfire Trio":"Blackfire",
     "Quickmarch Trio":"Quickmarch",
     "Calamitous Blaze":"Start of Bahamut",
@@ -114,10 +114,6 @@ UCOB_PROG_POITNS = {
     #p1
     "Fireball":"Twintania"
 
-
-
-
-    
 }
 
 

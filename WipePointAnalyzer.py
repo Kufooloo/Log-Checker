@@ -295,8 +295,8 @@ def returnMatchingCastsFromLog(contents, id):
             if name == 'Cosmo Memory':
                 if cast.get('name') == name and cast.get('actorName') == "Alpha Omega":
                     test_dict.update({name:True})
-            elif name == 'Liquid Hell':
-                if cast.get('name') == name and cast.get('total') > 30:
+            elif name == "Bahamut's Claw":
+                if cast.get('name') == name and cast.get('total') > 20:
                     test_dict.update({name:True})
             elif cast.get('name') == name:
                 test_dict.update({name:True})
