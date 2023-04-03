@@ -81,7 +81,7 @@ TOP_PROG_POINTS = {
     "Run: ****mi* (Delta Version)": "Run Dynamis Delta",
     #P4
     "Blue Screen": "Blue Screen Enrage",
-
+    "Wave Cannon" : "Blue Screen Proteans",
 
     #P3
     "Ion Efflux": "Phase 3 Enrage",

@@ -8,9 +8,10 @@ from urllib.parse import urlparse
 from data import WORLDS, ENCOUNTERS, PHASES, FIGHTS, RELEASE_DATES
 import math
 from WipePointAnalyzer import WipePoint
-intents = discord.Intents.default()
+from utility import utility
+intents = discord.Intents.all()
 
-bot = discord.Bot()
+bot = discord.Bot(intents=intents)
 
 @bot.event
 async def on_ready():
@@ -463,6 +464,7 @@ def add_field_raid(embed, data, fight_name):
 bot.add_cog(FFlogs(bot))
 bot.add_cog(ReportAnalysis(bot))
 bot.add_cog(WipePoint(bot))
+bot.add_cog(utility(bot))
 
 bot.run(bot_token)
 
