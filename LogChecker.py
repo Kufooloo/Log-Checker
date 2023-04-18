@@ -464,7 +464,6 @@ def add_field_raid(embed, data, fight_name):
 bot.add_cog(FFlogs(bot))
 bot.add_cog(ReportAnalysis(bot))
 bot.add_cog(WipePoint(bot))
-bot.add_cog(utility(bot))
 
 bot.run(bot_token)
 
