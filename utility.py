@@ -22,33 +22,21 @@ class utility(commands.Cog):
         i = 0
         test =True
         url = ""
-        while i < len(token_list) and test == True:
+        while i < len(token_list):
             o = urlparse(token_list[i])
             print(o)
             if o.netloc == 'twitter.com':
                 print('found twitter link')
                 url = o._replace(netloc="www.vxtwitter.com").geturl()
                 test = False
+                token_list[i] = url
             i+=1
-        await ctx.delete()   
-        await ctx.channel.send(url)   
+        if test == False: 
+            message = ""
+            for item in token_list:
+                message += str(item)
+            await ctx.delete()   
+            await ctx.channel.send(message)   
 
         
         return
-        
-        
-
-
-                
-
-def token(string):
-    start, i = 0, 0
-    token_list = []
-    for x in range(0, len(string)):
-        if " " == string[i:i+1]:
-            token_list.append(string[start:i+1])
-            start = i + 1
-        i += 1
-    token_list.append(string[start:i+1])
-    return token_list
-    
