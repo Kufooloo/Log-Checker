@@ -13,6 +13,8 @@ class utility(commands.Cog):
         self.response = []
     @commands.Cog.listener()
     async def on_message(self, ctx):
+        if ctx.author.id == 1062903042099392522:
+            return
         content = ctx.content
         print(content)
         token_list = token(content)
@@ -28,22 +30,11 @@ class utility(commands.Cog):
                 url = o._replace(netloc="www.vxtwitter.com").geturl()
                 test = False
             i+=1
-        
-        if test == True:
-            return
-        
-        self.reponse = [url,ctx]
-        await ctx.add_reaction('📹')
-        await asyncio.sleep(10)
-        await ctx.remove_reaction('📹')
-        self.response = []
-        return
-    @commands.Cog.listener()
-    async def on_reaction_add(self, reaction, user):
-        if user.id == self.response[1].id and reaction.emoji == "📹":
-            self.reponse[1].send(self.reponse[0])
-        return
+        await ctx.delete()   
+        await ctx.channel.send(url)   
 
+        
+        return
         
         
 
