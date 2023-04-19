@@ -11,13 +11,23 @@ class utility(commands.Cog):
         super().__init__()
         self.bot = bot
         self.response = []
+    def token_func(string):
+        start, i = 0, 0
+        token_list = []
+        for x in range(0, len(string)):
+            if " " == string[i:i+1]:
+                token_list.append(string[start:i+1])
+                start = i + 1
+            i += 1
+        token_list.append(string[start:i+1])
+        return token_list
     @commands.Cog.listener()
     async def on_message(self, ctx):
         if ctx.author.id == 1062903042099392522:
             return
         content = ctx.content
         print(content)
-        token_list = token(content)
+        token_list = self.token_func(content)
         print(token_list)
         i = 0
         test =True
@@ -39,13 +49,4 @@ class utility(commands.Cog):
             await ctx.channel.send(message)   
         return
     
-    def token(string):
-        start, i = 0, 0
-        token_list = []
-        for x in range(0, len(string)):
-            if " " == string[i:i+1]:
-                token_list.append(string[start:i+1])
-                start = i + 1
-            i += 1
-        token_list.append(string[start:i+1])
-        return token_list
+
