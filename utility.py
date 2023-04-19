@@ -11,7 +11,7 @@ class utility(commands.Cog):
         super().__init__()
         self.bot = bot
         self.response = []
-    def token_func(string):
+    def token_func(self, string):
         start, i = 0, 0
         token_list = []
         for x in range(0, len(string)):
