@@ -40,12 +40,12 @@ class utility(commands.Cog):
         return
     
     def token(string):
-    start, i = 0, 0
-    token_list = []
-    for x in range(0, len(string)):
-        if " " == string[i:i+1]:
-            token_list.append(string[start:i+1])
-            start = i + 1
-        i += 1
-    token_list.append(string[start:i+1])
-    return token_list
+        start, i = 0, 0
+        token_list = []
+        for x in range(0, len(string)):
+            if " " == string[i:i+1]:
+                token_list.append(string[start:i+1])
+                start = i + 1
+            i += 1
+        token_list.append(string[start:i+1])
+        return token_list
