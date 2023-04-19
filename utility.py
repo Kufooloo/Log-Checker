@@ -37,6 +37,15 @@ class utility(commands.Cog):
                 message += str(item)
             await ctx.delete()   
             await ctx.channel.send(message)   
-
-        
         return
+    
+    def token(string):
+    start, i = 0, 0
+    token_list = []
+    for x in range(0, len(string)):
+        if " " == string[i:i+1]:
+            token_list.append(string[start:i+1])
+            start = i + 1
+        i += 1
+    token_list.append(string[start:i+1])
+    return token_list
