@@ -119,9 +119,9 @@ class WipePoint(commands.Cog):
         for key, num in report.items():
             if num != 0:
                 if lookForID == 1068:
-                    title = f"{TOP_PROG_POINTS[key]} - {math.floor(time_dict[key]/60000)}:{math.floor(time_dict[key]%60000/1000)}"
+                    title = f"{TOP_PROG_POINTS[key]} - {math.floor(time_dict[key]/60000)}:{str(math.floor(time_dict[key]%60000/1000)).zfill(2)}"
                 elif lookForID == 1060:
-                    title = f"{UCOB_PROG_POITNS[key]} - {math.floor(time_dict[key]/60000)}:{math.floor(time_dict[key]%60000/1000)}"
+                    title = f"{UCOB_PROG_POITNS[key]} - {math.floor(time_dict[key]/60000)}:{str(math.floor(time_dict[key]%60000/1000)).zfill(2)}"
                 body = f"Wiped {num} time(s)"
                 print(f"title {title} body {body}")
 
