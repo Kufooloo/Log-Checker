@@ -65,7 +65,27 @@ RELEASE_DATES = {
     "Asphodelos": 1641283200,
     "Abyssos": 1661842800
 }
-
+DSR_PROG_POINTS = {
+"Clear": "Cleared Dragon Song War Reprise",
+#p7
+"Morn Afah's Edge":"Dragon King Thordan Enrage",
+"Akh Morn's Edge":"Akh Morn's Edge",
+#p6
+"Touchdown":"Touchdown",
+"Wroth Flames":"Wroth Flames",
+#p5
+"Death of the Heavens":"Death of the Heavens",
+"Wrath of the Heavens":"Wrath of the Heavens",
+#p4
+"Mirage Dive":"Mirage Dives",
+"Hatebound":"Eyes Phase",
+#p3
+"Revenge of the Hoard":"P3 Enrage",
+"Dive from Grace":"P3 Start",
+#p2
+"Sanctity of the Ward":"Sanctity of the Ward",
+"Strength of the Ward":"Strength of the Ward"
+}
 
 
 TOP_PROG_POINTS = {
