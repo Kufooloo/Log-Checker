@@ -82,6 +82,7 @@ class WipePoint(commands.Cog):
             if item[2] == True:
                 report['Clear'] += 1
                 time_dict['Clear'] += item[1]-item[0]
+                total_time += item[1]-item[0]
             else:
                 start_time = item[0]
                 end_time = item[1]
@@ -98,17 +99,18 @@ class WipePoint(commands.Cog):
             contents = response.json()
         except:
             await ctx.send(str(response))
-        for item in contents['data']['reportData']['report']:
-            furthestCast = returnMatchingCastsFromLog(contents['data']['reportData']['report'][item], lookForID)
-            print(furthestCast)
-            print(f"Start: {start_time} End: {end_time}")
-            for key, content in furthestCast.items():
-                if content:
-                    report[key] += 1
-                    time = int(contents['data']['reportData']['report'][item]['data'].get("totalTime"))
-                    time_dict[key] += time
-                    total_time += time
-                    break
+        if not contents.get('errors'):
+            for item in contents['data']['reportData']['report']:
+                furthestCast = returnMatchingCastsFromLog(contents['data']['reportData']['report'][item], lookForID)
+                print(furthestCast)
+                print(f"Start: {start_time} End: {end_time}")
+                for key, content in furthestCast.items():
+                    if content:
+                        report[key] += 1
+                        time = int(contents['data']['reportData']['report'][item]['data'].get("totalTime"))
+                        time_dict[key] += time
+                        total_time += time
+                        break
 
         
 
@@ -134,7 +136,7 @@ class WipePoint(commands.Cog):
         time_now = datetime.datetime.now()
         diff = time_now - time_at_call
         duration = diff.total_seconds()
-        message_embed.set_footer(text=f"{fight_num} pulls. Took {duration} to proccess. Total time: {math.floor(total_time/60000)} mins")
+        message_embed.set_footer(text=f"{fight_num + report['Clear']} pulls. Took {duration} to proccess. Total time: {math.floor(total_time/60000)} mins")
         await ctx.followup.send(embed = message_embed)
 
 def returnFightStartEndTImes(report:str, encounterID:int):
