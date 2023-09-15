@@ -35,7 +35,7 @@ class utility(commands.Cog):
         while i < len(token_list):
             o = urlparse(token_list[i])
             print(o)
-            if o.netloc == 'twitter.com':
+            if o.netloc == 'twitter.com' or o.netloc == 'x.com':
                 print('found twitter link')
                 url = o._replace(netloc="www.vxtwitter.com").geturl()
                 test = False
